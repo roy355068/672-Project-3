@@ -1,6 +1,6 @@
 % https://www.mathworks.com/help/optim/ug/lsqcurvefit.html
 % Use lsqcurvefit to fit gaussian to find the optimal maxima
-function x = gaussianfit(xData,yData,zData)
+function x = GaussianFitting(xData,yData,zData)
     % Condition the data
     [X, Y] = meshgrid(xData,yData);
     XY(:,:,1) = X;  % x coordinate

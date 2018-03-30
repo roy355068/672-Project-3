@@ -1,3 +1,4 @@
+close all;
 imagePath = 'images/001_a5_002_t001.tif';
 I = imread(imagePath);
 % result = plot(Y, X, 'o', 'MarkerEdgeColor','green');
