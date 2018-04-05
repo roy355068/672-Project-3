@@ -1,25 +1,26 @@
 function [ centerX, centerY ] = Interpolate( localMax, I, noiseMean )
     % vector to store the x and y coordinate of the center 
-    centerX = [];
-    centerY = [];
+    tempCenterX = [];
+    tempCenterY = [];
     shape = size(localMax);
-    X=[];
-    Y=[];
+    tempX=[];
+    tempY=[];
 
     % Append the local max points into X and Y vectors for further usage
     num = 0;
     for i = 1 : shape(1)
         for j = 1 : shape(2)
             if localMax(i, j) == 1
-                X = [X j];
-                Y = [Y i];
+                tempX = [tempX j];
+                tempY = [tempY i];
                 num = num+1;
             end
         end
     end
+    X = tempX; Y = tempY;
     
     for k = 1 : num
-        % Up-sampling
+        % Oversampling the image by a factor of 5
         [Xq, Yq] = meshgrid(X(k)-0.4:0.2:X(k)+0.4, Y(k)-0.4:0.2:Y(k)+0.4);
         XX = [X(k) - 2, X(k) - 1, X(k), X(k)+1, X(k) + 2];
         YY = [Y(k) - 2, Y(k) - 1, Y(k), Y(k)+1, Y(k) + 2];
@@ -31,13 +32,15 @@ function [ centerX, centerY ] = Interpolate( localMax, I, noiseMean )
         end
         
 %         zi = interp2(XX, YY, V, Xq, Yq, 'cubic');
+        % Interpolate sub-pixel maxima
         zi = interp2(XX, YY, V, Xq, Yq);
-        % Fit the image
+        % Use the result of interpolation to fit the image
         result = GaussianFitting(1:5,1:5,zi);
         % The result format is [amp, b, x0, y0]
         x0 = (X(k) - 0.4 + (result(3) - 1) * 0.2); % the absolute x-coordinate of the center
         y0 = (Y(k) - 0.4 + (result(4) - 1) * 0.2); % the absolute y-coordinate of teh center
-        centerX = [centerX x0];
-        centerY = [centerY y0];
+        tempCenterX = [tempCenterX x0];
+        tempCenterY = [tempCenterY y0];
     end
+    centerX = tempCenterX; centerY = tempCenterY;
 end
